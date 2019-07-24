@@ -2,11 +2,10 @@ module Lib
     ( arrastar,
     checkArrastar,
     soma,
-    deslizar
-    ) where
+    deslizar,
+    transposta
 
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+    ) where
 
 shift :: (Eq a, Num a) => [a] -> [a]
 shift [] = []
@@ -64,4 +63,47 @@ deslizar xs
     where
         xsModificada = arrastaESoma xs
         okArrasto = checkArrastar $ xsModificada
-        
+
+
+pegarColuna :: (Eq a, Num a) => [[a]] -> Int -> [a]
+pegarColuna [[]] _ = []
+pegarColuna xss i 
+    |i >= length (head xss) = []
+    |otherwise = [xs !! i | xs <- xss]
+
+
+transposta :: (Eq a, Num a) => [[a]] -> [[a]]
+transposta [] = []
+transposta xss = recRot xss 0
+
+recRot :: (Eq a, Num a) => [[a]] -> Int -> [[a]]
+recRot [] _ = []
+recRot xss i 
+    | coluna == [] = []
+    | otherwise = coluna:(recRot xss (i+1))
+    where
+        coluna = pegarColuna xss i
+
+-- A funcao que recebe o tabuleiro inteiro e retorna ele com um deslize pra direita
+swipeRight :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeRight [] = []
+swipeRight xss = map deslizar xss
+
+-- A funcao que recebe o tabuleiro inteiro e retorna ele com um deslize pra esquerda
+swipeLeft :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeLeft [] = []
+swipeLeft xss = map reverse $ map deslizar ssx
+    where
+        ssx = map reverse xss
+
+swipeDown :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeDown [] = []
+swipeDown xss = transposta $ swipeRight xssT
+    where
+        xssT = transposta xss
+
+swipeUp :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeUp [] = []
+swipeUp xss = transposta $ swipeLeft xssT
+    where
+        xssT = transposta xss

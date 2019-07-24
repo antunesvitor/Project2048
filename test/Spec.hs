@@ -10,7 +10,7 @@ main = do
   defaultMain tests
 
 tests :: TestTree
-tests = (testGroup "projeto 2048 testes" [checkarrastarTest, arrastarTest, somaTest, deslizarTest])
+tests = (testGroup "projeto 2048 testes" [checkarrastarTest, arrastarTest, somaTest, deslizarTest, rotacionarAntiHorarioTest])
 
 checkarrastarTest = testGroup "checkArrastar"
         [ testCase "test1" (assertEqual "Test 1" True (checkArrastar [0,0,0,2])),
@@ -80,3 +80,16 @@ deslizarTest = testGroup "deslizar"
         testCase "test12" (assertEqual "Test 12" [0,4,8,2] (deslizar [4,4,4,2])),
         testCase "test13" (assertEqual "Test 13" [0,8,8,2] (deslizar [4,4,8,2]))
     ]
+
+rotacionarAntiHorarioTest = testGroup "rotacionarAntiHorario"
+    [
+        testCase "test1" (assertEqual "Test 1" [[15,20],[25,30]] (rotacionarAntiHorario [[15,25],[20,30]])),
+        testCase "test2" (assertEqual "Test 2" [[10,10,10],[15,15,15],[20,20,20]] (rotacionarAntiHorario [[10,15,20],[10,15,20],[10,15,20]])),
+        testCase "test3" (assertEqual "Test 3" [[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4]] (rotacionarAntiHorario [[1,2,3,4],[1,2,3,4],[1,2,3,4],[1,2,3,4]])),
+        testCase "test4" (assertEqual "Test 4" [[1,1,1,1,1],[2,2,2,2,2],[3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]] (rotacionarAntiHorario [[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]])),
+        testCase "test5" (assertEqual "Test 5" [[10,30,50],[20,40,60]] (rotacionarAntiHorario [[10,20],[30,40],[50,60]])),
+        testCase "test6" (assertEqual "Test 6" [[10],[20],[30],[40],[50]] (rotacionarAntiHorario [[10,20,30,40,50]])),
+        testCase "test7" (assertEqual "Test 7" [[10,20,30,40,50]] (rotacionarAntiHorario [[10],[20],[30],[40],[50]])),
+        testCase "test8" (assertEqual "Test 8" [[1,4,7],[2,5,8],[3,6,9]] (rotacionarAntiHorario [[1,2,3],[4,5,6],[7,8,9]]))
+    ]
+    
