@@ -3,8 +3,9 @@ module Lib
     checkArrastar,
     soma,
     deslizar,
-    transposta
-
+    transposta,
+    comparaEstadoLinha,
+    comparaEstado
     ) where
 
 shift :: (Eq a, Num a) => [a] -> [a]
@@ -107,3 +108,28 @@ swipeUp [] = []
 swipeUp xss = transposta $ swipeLeft xssT
     where
         xssT = transposta xss
+    
+comparaEstadoLinha :: (Num a, Eq a) => [a] -> [a] -> Bool
+comparaEstadoLinha [] [] = True                                 -- Quer dizer que ambas as listas esvariaram logo são iguais
+comparaEstadoLinha [] ys = False                                -- Quer dizer que apenas uma esvaziou e outra possui itens, trivialmente são diferentes
+comparaEstadoLinha xs [] = False                                -- idem
+comparaEstadoLinha (x:xs) (y:ys)
+    | y == x = comparaEstadoLinha xs ys
+    | otherwise = False                                         -- Se apenas um item for diferente então é falso
+
+comparaEstado :: (Num a, Eq a) => [[a]] -> [[a]] -> Bool
+comparaEstado [] []  = True
+comparaEstado [] yss = False
+comparaEstado xss [] = False
+comparaEstado (xs:xss) (ys:yss) 
+    | comparaEstadoLinha xs ys = comparaEstado xss yss
+    | otherwise = False
+
+-- checkGameOver :: (Num a, Eq a) => [[a]] -> Bool
+-- checkGameOver xss
+--     | 
+--     where
+--         leftSwiped = swipeLeft xss
+--         rightSwiped = swipeRight xss
+--         upSwiped = swipeUp xss
+--         downSwiped = swipeDown xss

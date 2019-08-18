@@ -10,7 +10,7 @@ main = do
   defaultMain tests
 
 tests :: TestTree
-tests = (testGroup "projeto 2048 testes" [checkarrastarTest, arrastarTest, somaTest, deslizarTest, rotacionarAntiHorarioTest])
+tests = (testGroup "projeto 2048 testes" [checkarrastarTest, arrastarTest, somaTest, deslizarTest, rotacionarAntiHorarioTest, comparaEstadoLinhaTeste, comparaEstadoTeste])
 
 checkarrastarTest = testGroup "checkArrastar"
         [ testCase "test1" (assertEqual "Test 1" True (checkArrastar [0,0,0,2])),
@@ -83,13 +83,34 @@ deslizarTest = testGroup "deslizar"
 
 rotacionarAntiHorarioTest = testGroup "rotacionarAntiHorario"
     [
-        testCase "test1" (assertEqual "Test 1" [[15,20],[25,30]] (rotacionarAntiHorario [[15,25],[20,30]])),
-        testCase "test2" (assertEqual "Test 2" [[10,10,10],[15,15,15],[20,20,20]] (rotacionarAntiHorario [[10,15,20],[10,15,20],[10,15,20]])),
-        testCase "test3" (assertEqual "Test 3" [[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4]] (rotacionarAntiHorario [[1,2,3,4],[1,2,3,4],[1,2,3,4],[1,2,3,4]])),
-        testCase "test4" (assertEqual "Test 4" [[1,1,1,1,1],[2,2,2,2,2],[3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]] (rotacionarAntiHorario [[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]])),
-        testCase "test5" (assertEqual "Test 5" [[10,30,50],[20,40,60]] (rotacionarAntiHorario [[10,20],[30,40],[50,60]])),
-        testCase "test6" (assertEqual "Test 6" [[10],[20],[30],[40],[50]] (rotacionarAntiHorario [[10,20,30,40,50]])),
-        testCase "test7" (assertEqual "Test 7" [[10,20,30,40,50]] (rotacionarAntiHorario [[10],[20],[30],[40],[50]])),
-        testCase "test8" (assertEqual "Test 8" [[1,4,7],[2,5,8],[3,6,9]] (rotacionarAntiHorario [[1,2,3],[4,5,6],[7,8,9]]))
+        testCase "test1" (assertEqual "Test 1" [[15,20],[25,30]] (transposta [[15,25],[20,30]])),
+        testCase "test2" (assertEqual "Test 2" [[10,10,10],[15,15,15],[20,20,20]] (transposta [[10,15,20],[10,15,20],[10,15,20]])),
+        testCase "test3" (assertEqual "Test 3" [[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4]] (transposta [[1,2,3,4],[1,2,3,4],[1,2,3,4],[1,2,3,4]])),
+        testCase "test4" (assertEqual "Test 4" [[1,1,1,1,1],[2,2,2,2,2],[3,3,3,3,3],[4,4,4,4,4],[5,5,5,5,5]] (transposta [[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5],[1,2,3,4,5]])),
+        testCase "test5" (assertEqual "Test 5" [[10,30,50],[20,40,60]] (transposta [[10,20],[30,40],[50,60]])),
+        testCase "test6" (assertEqual "Test 6" [[10],[20],[30],[40],[50]] (transposta [[10,20,30,40,50]])),
+        testCase "test7" (assertEqual "Test 7" [[10,20,30,40,50]] (transposta [[10],[20],[30],[40],[50]])),
+        testCase "test8" (assertEqual "Test 8" [[1,4,7],[2,5,8],[3,6,9]] (transposta [[1,2,3],[4,5,6],[7,8,9]]))
     ]
     
+comparaEstadoLinhaTeste = testGroup "compararEstadoLinha"
+    [
+        testCase "teste1" (assertEqual "Test 1" True (comparaEstadoLinha ([1,2,3,4]) ([1,2,3,4]))),
+        testCase "teste2" (assertEqual "Test 2" False (comparaEstadoLinha ([1,2,3,4]) ([1,2,3,4,5]))),
+        testCase "teste3" (assertEqual "Test 3" True (comparaEstadoLinha ([]) ([]))),
+        testCase "teste4" (assertEqual "Test 4" False (comparaEstadoLinha ([1,1,1,2]) ([1,1,1,1]))),
+        testCase "teste5" (assertEqual "Test 5" False (comparaEstadoLinha ([1,1,2,1]) ([1,1,1,1]))),
+        testCase "teste6" (assertEqual "Test 6" False (comparaEstadoLinha ([1,2,1,1]) ([1,1,1,1]))),
+        testCase "teste7" (assertEqual "Test 7" False (comparaEstadoLinha ([2,1,1,1]) ([1,1,1,1]))),
+        testCase "teste8" (assertEqual "Test 8" False (comparaEstadoLinha ([1,1,1,1]) ([1,1,1,2]))),
+        testCase "teste9" (assertEqual "Test 9" False (comparaEstadoLinha ([1,1,1,1]) ([1,1,2,1]))),
+        testCase "teste10" (assertEqual "Test 10" False (comparaEstadoLinha ([1,1,1,1]) ([1,2,1,1]))),
+        testCase "teste11" (assertEqual "Test 11" False (comparaEstadoLinha ([1,1,1,1]) ([2,1,1,1])))
+    ]
+
+comparaEstadoTeste = testGroup "compararEstadoLinha"
+    [
+        testCase "teste1" (assertEqual "Test 1" True (comparaEstado ([[1,2,3,4]]) ([[1,2,3,4]]))),
+        testCase "teste2" (assertEqual "Test 2" False (comparaEstado ([[1,2,3,4]]) ([[1,2,3,4],[5]]))),
+        testCase "teste3" (assertEqual "Test 3" True (comparaEstado ([]) ([])))
+    ]
