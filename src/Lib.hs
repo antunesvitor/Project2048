@@ -5,7 +5,9 @@ module Lib
     deslizar,
     transposta,
     comparaEstadoLinha,
-    comparaEstado
+    comparaEstado,
+    checkMovimentosPossiveis,
+    checkGameOver
     ) where
 
 shift :: (Eq a, Num a) => [a] -> [a]
@@ -125,11 +127,35 @@ comparaEstado (xs:xss) (ys:yss)
     | comparaEstadoLinha xs ys = comparaEstado xss yss
     | otherwise = False
 
--- checkGameOver :: (Num a, Eq a) => [[a]] -> Bool
--- checkGameOver xss
---     | 
---     where
---         leftSwiped = swipeLeft xss
---         rightSwiped = swipeRight xss
---         upSwiped = swipeUp xss
---         downSwiped = swipeDown xss
+canSwipeRight :: (Num a, Eq a) => [[a]] -> Bool
+canSwipeRight xss = not $ comparaEstado rightSwiped xss
+    where
+        rightSwiped = swipeRight xss
+
+canSwipeLeft ::  (Num a, Eq a) => [[a]] -> Bool
+canSwipeLeft xss = not $ comparaEstado leftSwiped xss
+    where
+        leftSwiped = swipeLeft xss
+
+canSwipeUp ::  (Num a, Eq a) => [[a]] -> Bool
+canSwipeUp xss = not $ comparaEstado upSwiped xss
+    where
+        upSwiped = swipeUp xss
+
+canSwipeDown ::  (Num a, Eq a) => [[a]] -> Bool
+canSwipeDown xss = not $ comparaEstado downSwiped xss
+    where
+        downSwiped = swipeDown xss
+
+checkMovimentosPossiveis :: (Num a, Eq a) => [[a]] -> [Bool]
+checkMovimentosPossiveis xss = [canSwipeUp xss] ++ [canSwipeRight xss] ++ [canSwipeDown xss] ++ [canSwipeLeft xss]
+
+allFalse :: [Bool] -> Bool
+allFalse [] = True
+allFalse [x] = not x
+allFalse (x:xs)
+    | not x = (not x) && allFalse xs
+    | otherwise = False
+
+checkGameOver :: (Num a, Eq a) => [[a]] -> Bool
+checkGameOver xss = allFalse $ checkMovimentosPossiveis xss

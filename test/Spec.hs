@@ -10,7 +10,10 @@ main = do
   defaultMain tests
 
 tests :: TestTree
-tests = (testGroup "projeto 2048 testes" [checkarrastarTest, arrastarTest, somaTest, deslizarTest, rotacionarAntiHorarioTest, comparaEstadoLinhaTeste, comparaEstadoTeste])
+tests = (testGroup "projeto 2048 testes" [checkarrastarTest, arrastarTest,
+                                            somaTest, deslizarTest, rotacionarAntiHorarioTest,
+                                            comparaEstadoLinhaTeste, comparaEstadoTeste,
+                                            checkGameOverTest, movimentacoesPossiveisTeste])
 
 checkarrastarTest = testGroup "checkArrastar"
         [ testCase "test1" (assertEqual "Test 1" True (checkArrastar [0,0,0,2])),
@@ -114,3 +117,29 @@ comparaEstadoTeste = testGroup "compararEstadoLinha"
         testCase "teste2" (assertEqual "Test 2" False (comparaEstado ([[1,2,3,4]]) ([[1,2,3,4],[5]]))),
         testCase "teste3" (assertEqual "Test 3" True (comparaEstado ([]) ([])))
     ]
+
+movimentacoesPossiveisTeste = testGroup "movimentacoesPossiveis"
+    [
+        testCase "teste1" (assertEqual "Test 1" [False, True,  True,  True]   (checkMovimentosPossiveis [[2,2,2,2],[0,0,0,0],[0,0,0,0],[0,0,0,0]])),
+        testCase "teste2" (assertEqual "Test 2" [True,  True,  True,  True]   (checkMovimentosPossiveis [[2,2,2,2],[0,0,0,0],[2,2,2,2],[0,0,0,0]])),
+        testCase "teste3" (assertEqual "Test 3" [True,  True,  True,  True]   (checkMovimentosPossiveis [[0,0,0,0],[0,2,0,0],[0,0,0,0],[0,0,0,0]])),
+        testCase "teste4" (assertEqual "Test 4" [True,  True,  False, True]   (checkMovimentosPossiveis [[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,2,2,2]])),
+        testCase "teste5" (assertEqual "Test 5" [True,  True,  False, True]   (checkMovimentosPossiveis [[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,2,2,2]])),
+        testCase "teste6" (assertEqual "Test 6" [False, False, False, False]  (checkMovimentosPossiveis [[4,8,128,256],[2,4,64,128],[4,8,128,16],[32,2,16,32]])),
+        testCase "teste7" (assertEqual "Test 7" [True,  False, True,  False]  (checkMovimentosPossiveis [[4,8,128,256],[2,4,128,4],[4,8,128,16],[32,2,16,32]])),
+        testCase "teste8" (assertEqual "Test 8" [False, True,  False, True]   (checkMovimentosPossiveis [[4,4,128,256],[2,32,64,128],[4,8,128,16],[32,2,16,32]])),
+        testCase "teste9" (assertEqual "Test 9" [False, False, False, True]   (checkMovimentosPossiveis [[0,8,128,256],[0,4,64,128],[0,8,128,16],[0,2,16,32]])),
+        testCase "teste10" (assertEqual "Test 10" [True, True, False, False]  (checkMovimentosPossiveis [[1024,8,128,0],[2,4,64,128],[4,8,128,16],[32,2,16,32]])),
+        testCase "teste11" (assertEqual "Test 11" [False, True,  True,  True]   (checkMovimentosPossiveis [[4,8,128,256],[2,4,64,128],[4,8,128,16],[32,2,0,32]]))
+    ]
+
+checkGameOverTest = testGroup "checkGameOver" 
+    [
+        testCase "teste1" (assertEqual "Test 1" False (checkGameOver [[2,2,2,2],[0,0,0,0],[0,0,0,0],[0,0,0,0]])),
+        testCase "teste2" (assertEqual "Test 2" True  (checkGameOver [[4,8,128,256],[2,4,64,128],[4,8,128,16],[32,2,16,32]])),
+        testCase "teste3" (assertEqual "Test 3" False (checkGameOver [[1024,8,128,0],[2,4,64,128],[4,8,128,16],[32,2,16,32]])),
+        testCase "teste4" (assertEqual "Test 4" True  (checkGameOver [[2,4,2,4],[4,2,4,2],[2,4,2,4],[4,2,4,2]])),
+        testCase "teste5" (assertEqual "Test 5" True  (checkGameOver [[2,4,8,16],[16,8,4,2],[32,64,128,256],[2,4,8,16]])),
+        testCase "teste6" (assertEqual "Test 6" False (checkGameOver [[2,4,8,16],[16,8,4,2],[32,128,128,256],[2,4,8,16]]))
+
+    ] 
