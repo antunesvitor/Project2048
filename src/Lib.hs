@@ -7,8 +7,15 @@ module Lib
     comparaEstadoLinha,
     comparaEstado,
     checkMovimentosPossiveis,
-    checkGameOver
+    checkGameOver,
+    decide,
+    swipeUp,
+    swipeDown,
+    swipeLeft,
+    swipeRight
     ) where
+    
+import Control.Concurrent
 
 shift :: (Eq a, Num a) => [a] -> [a]
 shift [] = []
@@ -159,3 +166,18 @@ allFalse (x:xs)
 
 checkGameOver :: (Num a, Eq a) => [[a]] -> Bool
 checkGameOver xss = allFalse $ checkMovimentosPossiveis xss
+
+-- a maquina joga, recebe um tabuleiro e devolve ele movido, assumimos que ele tem algum movimento disponível(no jogo isso será checado antes dessa função ser chamada)
+decide :: (Num a, Eq a) => [[a]] -> [[a]]
+decide xss 
+    | canSwipeUp xss = swipeUp xss
+    | canSwipeRight xss = swipeRight xss
+    | canSwipeLeft xss = swipeLeft xss
+    | canSwipeDown xss = swipeDown xss
+    | otherwise = xss
+
+decideDelay :: (Num a, Eq a) => [[a]] -> IO [[a]]
+decideDelay  xss = do
+    threadDelay 500000
+    let newXss = decide xss
+    return newXss
