@@ -16,6 +16,9 @@ module Lib
     ) where
     
 import Control.Concurrent
+import System.Random
+import Data.Time.Clock
+import Data.Time.LocalTime
 
 shift :: (Eq a, Num a) => [a] -> [a]
 shift [] = []
@@ -95,29 +98,96 @@ recRot xss i
         coluna = pegarColuna xss i
 
 -- A funcao que recebe o tabuleiro inteiro e retorna ele com um deslize pra direita
-swipeRight :: (Num a, Eq a ) => [[a]]-> [[a]]
-swipeRight [] = []
-swipeRight xss = map deslizar xss
+swipeRight' :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeRight' [] = []
+swipeRight' xss = map deslizar xss
 
 -- A funcao que recebe o tabuleiro inteiro e retorna ele com um deslize pra esquerda
-swipeLeft :: (Num a, Eq a ) => [[a]]-> [[a]]
-swipeLeft [] = []
-swipeLeft xss = map reverse $ map deslizar ssx
+swipeLeft' :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeLeft' [] = []
+swipeLeft' xss = map reverse $ map deslizar ssx
     where
         ssx = map reverse xss
 
-swipeDown :: (Num a, Eq a ) => [[a]]-> [[a]]
-swipeDown [] = []
-swipeDown xss = transposta $ swipeRight xssT
+swipeDown' :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeDown' [] = []
+swipeDown' xss = transposta $ swipeRight' xssT
     where
         xssT = transposta xss
 
-swipeUp :: (Num a, Eq a ) => [[a]]-> [[a]]
-swipeUp [] = []
-swipeUp xss = transposta $ swipeLeft xssT
+swipeUp' :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeUp' [] = []
+swipeUp' xss = transposta $ swipeLeft' xssT
     where
         xssT = transposta xss
-    
+
+swipeRight :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeRight xss = adicionaNovoNumero $ swipeRight' xss
+
+swipeLeft :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeLeft xss = adicionaNovoNumero $ swipeLeft' xss
+
+swipeDown :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeDown xss = adicionaNovoNumero $ swipeDown' xss
+
+swipeUp :: (Num a, Eq a ) => [[a]]-> [[a]]
+swipeUp xss = adicionaNovoNumero $ swipeUp' xss
+
+
+adicionaNovoNumero ::  (Num a, Eq a ) => [[a]]-> [[a]]
+adicionaNovoNumero xss = alterarIndice xss enderecoAleatorio 2
+    where
+        enderecoAleatorio = escolherEndereco xss
+
+alterarIndice :: (Num a, Eq a) => [[a]] -> (Int, Int) -> a -> [[a]]
+alterarIndice xss (linha, coluna) valor = alterarIndice' xss (linha,coluna) valor 0 0
+
+-- colunaAtual e linhaAtual sempre são o indice do x e xs respectivamente dentro de seus métodos 
+alterarIndice' :: (Num a, Eq a) => [[a]] -> (Int, Int) -> a -> Int -> Int -> [[a]]
+alterarIndice' (xs: xss) (linha, coluna) valor linhaAtual colunaAtual 
+    | linhaAtual < linha =  xs:(alterarIndice' xss (linha, coluna) valor (linhaAtual + 1) colunaAtual)
+    | linhaAtual == linha = (atualizarLinha xs coluna valor 0) : xss
+
+-- colunaAtual é sempre o indice x durante a execução
+atualizarLinha :: (Num a, Eq a ) => [a] -> Int -> a -> Int -> [a]
+atualizarLinha (x:xs) coluna valor colunaAtual
+    | colunaAtual < coluna = x:(atualizarLinha xs coluna valor (colunaAtual + 1) )
+    | colunaAtual == coluna = valor:xs
+
+
+escolherEndereco :: (Num a, Eq a) => [[a]] -> (Int, Int)
+escolherEndereco xss = head zeros
+    where
+        zeros = listarZerosMatriz xss
+-- escolherEndereco xss = zeros !! indice
+--     where
+--         zeros = listarZerosMatriz xss
+--         indice = getStdRandom(randomR (0,4))
+
+
+
+-- Dada uma matriz retorna os endereços (linha, coluna) de onde está os zeros
+listarZerosMatriz :: (Num a, Eq a) => [[a]] -> [(Int, Int)]
+listarZerosMatriz xss = listarZerosMatriz' xss 0
+
+listarZerosMatriz' :: (Num a , Eq a ) => [[a]] -> Int -> [(Int, Int)]
+listarZerosMatriz' [] _ = []
+listarZerosMatriz' (xs:xss) linha = coordenadasDeZeros ++ listarZerosMatriz' xss (linha + 1)
+    where
+        listaDeZeros = listarZeros xs 0
+        coordenadasDeZeros = [(linha, i)| i <- listaDeZeros]
+
+-- Recebe um array de ints e uma coluna (assume que será sempre zero quando esta função ser chamada), e retorna um arrayb 
+listarZeros :: (Num a, Eq a) => [a] -> Int -> [Int]
+listarZeros [] col = []
+listarZeros [a]  col
+    | a == 0 =  [col]
+    | otherwise = []
+
+listarZeros (x:xs) col
+    | x == 0 = col:(listarZeros xs (col + 1))
+    | otherwise = (listarZeros xs (col + 1))
+
 comparaEstadoLinha :: (Num a, Eq a) => [a] -> [a] -> Bool
 comparaEstadoLinha [] [] = True                                 -- Quer dizer que ambas as listas esvariaram logo são iguais
 comparaEstadoLinha [] ys = False                                -- Quer dizer que apenas uma esvaziou e outra possui itens, trivialmente são diferentes
@@ -181,3 +251,14 @@ decideDelay  xss = do
     threadDelay 500000
     let newXss = decide xss
     return newXss
+
+-- playGame :: (Num a, Eq a) => [[a]] -> IO [[a]]
+-- playGame xss
+--     | checkGameOver xss = do
+--         putStr ("Fim de jogo")
+--         return [[]]
+--     | otherwise = do
+--         threadDelay 500000
+--         let a = decide xss
+--         putStr(show a)
+--         playGame a
