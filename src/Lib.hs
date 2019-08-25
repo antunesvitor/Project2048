@@ -16,6 +16,11 @@ module Lib
     ) where
     
 import Control.Concurrent
+import System.Random
+import Data.Array.ST
+import Control.Monad
+import Control.Monad.ST
+import Data.STRef
 
 -- As quatro Funções principais para deslizar o tabuleiro
         -- Deslizam um tabuleiro para algum lado (Cima, baixo, direta ou esquerda) e então adicionam um novo numero 2 em uma posição que é zero
@@ -194,16 +199,10 @@ atualizarLinha (x:xs) coluna valor colunaAtual
         -- Essa função recebe uma matriz e retorna um endereço ~supostamente~ aleatorio de uma lista de posições zeros
 escolherEndereco :: (Num a, Eq a) => [[a]] -> (Int, Int)
 escolherEndereco xss 
-    | zeros == [] = (5,5)
-    | otherwise  = head zeros
+    | fst zeros == [] = (5,5)
+    | otherwise  = head $ fst zeros
     where
-        zeros = listarZerosMatriz xss
--- escolherEndereco xss = zeros !! indice
---     where
---         zeros = listarZerosMatriz xss
---         indice = getStdRandom(randomR (0,4))
-
-
+        zeros = shuffle' (listarZerosMatriz xss) (mkStdGen 2)
 
 -- Dada uma matriz retorna os endereços (linha, coluna) de onde está os zeros
 listarZerosMatriz :: (Num a, Eq a) => [[a]] -> [(Int, Int)]
@@ -294,3 +293,26 @@ decideDelay  xss = do
     threadDelay 500000
     let newXss = decide xss
     return newXss
+
+-- | Randomly shuffle a list without the IO Monad
+--   /O(N)/
+shuffle' :: [a] -> StdGen -> ([a],StdGen)
+shuffle' xs gen = runST (do
+        g <- newSTRef gen
+        let randomRST lohi = do
+              (a,s') <- liftM (randomR lohi) (readSTRef g)
+              writeSTRef g s'
+              return a
+        ar <- newArray n xs
+        xs' <- forM [1..n] $ \i -> do
+                j <- randomRST (i,n)
+                vi <- readArray ar i
+                vj <- readArray ar j
+                writeArray ar j vi
+                return vj
+        gen' <- readSTRef g
+        return (xs',gen'))
+  where
+    n = length xs
+    newArray :: Int -> [a] -> ST s (STArray s Int a)
+    newArray n xs =  newListArray (1,n) xs
