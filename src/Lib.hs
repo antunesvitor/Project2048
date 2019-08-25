@@ -61,7 +61,9 @@ swipeUp' xss = transposta $ swipeLeft' xssT
         
     -- adicionaNovoNumero: esta função recebe um tabuleiro e adiciona um 2 em uma posição zero
 adicionaNovoNumero ::  (Num a, Eq a ) => [[a]]-> [[a]]
-adicionaNovoNumero xss = alterarIndice xss enderecoAleatorio 2
+adicionaNovoNumero xss 
+    | enderecoAleatorio == (5,5) = xss
+    |otherwise =alterarIndice xss enderecoAleatorio 2
     where
         enderecoAleatorio = escolherEndereco xss
 
@@ -184,7 +186,9 @@ atualizarLinha (x:xs) coluna valor colunaAtual
 
         -- Essa função recebe uma matriz e retorna um endereço ~supostamente~ aleatorio de uma lista de posições zeros
 escolherEndereco :: (Num a, Eq a) => [[a]] -> (Int, Int)
-escolherEndereco xss = head zeros
+escolherEndereco xss 
+    | zeros == [] = (5,5)
+    | otherwise  = head zeros
     where
         zeros = listarZerosMatriz xss
 -- escolherEndereco xss = zeros !! indice
