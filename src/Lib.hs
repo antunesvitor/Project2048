@@ -20,17 +20,24 @@ import Control.Concurrent
 -- As quatro Funções principais para deslizar o tabuleiro
         -- Deslizam um tabuleiro para algum lado (Cima, baixo, direta ou esquerda) e então adicionam um novo numero 2 em uma posição que é zero
 swipeRight :: (Num a, Eq a ) => [[a]]-> [[a]]
-swipeRight xss = adicionaNovoNumero $ swipeRight' xss
+swipeRight xss 
+    | canSwipeRight xss = adicionaNovoNumero $ swipeRight' xss
+    | otherwise = xss
 
 swipeLeft :: (Num a, Eq a ) => [[a]]-> [[a]]
-swipeLeft xss = adicionaNovoNumero $ swipeLeft' xss
+swipeLeft xss 
+    | canSwipeLeft xss = adicionaNovoNumero $ swipeLeft' xss
+    | otherwise = xss
 
 swipeDown :: (Num a, Eq a ) => [[a]]-> [[a]]
-swipeDown xss = adicionaNovoNumero $ swipeDown' xss
+swipeDown xss 
+    | canSwipeDown xss = adicionaNovoNumero $ swipeDown' xss
+    | otherwise = xss
 
 swipeUp :: (Num a, Eq a ) => [[a]]-> [[a]]
-swipeUp xss = adicionaNovoNumero $ swipeUp' xss
-
+swipeUp xss 
+    | canSwipeUp xss = adicionaNovoNumero $ swipeUp' xss
+    | otherwise = xss
 
 -- Funcões Auxiliares: 
         -- swipeRight', swipeLeft', swipeUp', swipeDown':
